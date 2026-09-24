@@ -1,6 +1,6 @@
 param(
     [Parameter(Mandatory=$true)][string]$Endpoint,
-    [ValidateSet('GET','POST','PATCH')][string]$Method = 'GET',
+    [ValidateSet('GET','POST','PATCH','PUT')][string]$Method = 'GET',
     [string]$BodyFile
 )
 

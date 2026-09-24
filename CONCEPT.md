@@ -47,9 +47,9 @@ Authentifizierung:
 
 Empfehlung: ein gemeinsames PyPI-Paket fuer die Python-Client-Library, aber mit klar getrennten Client-Klassen.
 
-Vorgeschlagener Paketname:
+Festgelegter Paketname:
 
-- `neoom-connect` oder `pyneoom-connect`
+- `py-neoom-connect` (Python-Import: `neoom_connect`)
 
 Nicht empfohlen:
 
@@ -79,8 +79,8 @@ neoom_connect/
 Optional koennen Extras angeboten werden:
 
 ```text
-neoom-connect[ha]
-neoom-connect[dev]
+py-neoom-connect[ha]
+py-neoom-connect[dev]
 ```
 
 Fuer Home Assistant reicht meist ein schlankes Runtime-Paket mit `aiohttp`, `pydantic` oder `dataclasses`, `typing-extensions` und Tests ohne schwere Abhaengigkeiten.

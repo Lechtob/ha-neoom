@@ -1,7 +1,7 @@
 # neoom CONNECT / BEAAM fuer Home Assistant
 
 Lesende Integration fuer Speicher, PV, Netz und angeschlossene Energiegeraete.
-Ein gemeinsames Python-Paket `neoom-connect` enthaelt getrennte Clients fuer die
+Ein gemeinsames Python-Paket `py-neoom-connect` enthaelt getrennte Clients fuer die
 lokale BEAAM-API und die neoom-Cloud.
 
 ## Aktueller Stand

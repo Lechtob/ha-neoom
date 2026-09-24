@@ -1,4 +1,4 @@
-"""Exception hierarchy for neoom-connect."""
+"""Exception hierarchy for py-neoom-connect."""
 
 
 class NeoomConnectError(Exception):

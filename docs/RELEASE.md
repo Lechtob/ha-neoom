@@ -5,7 +5,7 @@ prepared; PyPI publication must succeed before installing through HACS.
 
 Before a public release:
 
-1. Configure the PyPI pending publisher for `neoom-connect`: GitHub owner
+1. Configure the PyPI pending publisher for `py-neoom-connect`: GitHub owner
    `Lechtob`, repository `ha-neoom`, workflow `publish.yml`, environment `pypi`.
 2. Run the Linux CI jobs and HACS/Hassfest validation.
 3. Run the Publish Python package workflow, verify its import from a clean environment,
