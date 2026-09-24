@@ -93,6 +93,7 @@ async def test_diagnostics_exclude_secrets_and_identity(hass, clients, entry):
     for secret in ("local-secret", "beaam.test", "site-1", "battery-1"):
         assert secret not in text
     assert report["devices"][0]["type"] == "BATTERY"
+    assert report["polling_intervals"] == {"local_seconds": 20, "cloud_seconds": 120}
 
 
 @pytest.mark.parametrize("value", [None, True, "bad", float("nan"), float("inf")])

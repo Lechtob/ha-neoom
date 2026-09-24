@@ -29,7 +29,7 @@ from neoom_connect import DataPoint, State
 from neoom_connect.diagnostics import numeric_value
 from neoom_connect.units import normalize_unit
 
-from .const import DOMAIN
+from .const import DOMAIN, MODE_CLOUD, MODE_LOCAL
 
 PARALLEL_UPDATES = 0
 
@@ -182,6 +182,7 @@ async def async_setup_entry(
     """Set up neoom sensors from a config entry."""
     coordinator = entry.runtime_data
     known: set[tuple[str | None, str]] = set()
+    async_add_entities([NeoomDataSourceSensor(entry.entry_id, coordinator)])
 
     @callback
     def discover() -> None:
@@ -226,6 +227,29 @@ async def async_setup_entry(
 
     discover()
     entry.async_on_unload(coordinator.async_add_listener(discover))
+
+
+class NeoomDataSourceSensor(CoordinatorEntity, SensorEntity):
+    """Expose the source of the latest successful site reading."""
+
+    _attr_has_entity_name = True
+    _attr_entity_category = EntityCategory.DIAGNOSTIC
+    _attr_device_class = SensorDeviceClass.ENUM
+    _attr_translation_key = "data_source"
+    _attr_options = [MODE_LOCAL, MODE_CLOUD]
+
+    def __init__(self, entry_id, coordinator):
+        super().__init__(coordinator)
+        self._attr_unique_id = f"{entry_id}-data_source"
+        self._attr_device_info = {
+            "identifiers": {(DOMAIN, entry_id)},
+            "name": "neoom Energy Management",
+            "manufacturer": "neoom",
+        }
+
+    @property
+    def native_value(self):
+        return self.coordinator.data.source
 
 
 class NeoomEnergyFlowSensor(CoordinatorEntity, SensorEntity):

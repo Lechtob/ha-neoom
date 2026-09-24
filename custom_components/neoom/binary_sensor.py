@@ -1,18 +1,40 @@
 """Connection and error status supplied by BEAAM devices."""
 
-from homeassistant.components.binary_sensor import BinarySensorDeviceClass, BinarySensorEntity
+from homeassistant.components.binary_sensor import (
+    BinarySensorDeviceClass,
+    BinarySensorEntity,
+    BinarySensorEntityDescription,
+)
 from homeassistant.core import callback
 from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
-from .const import DOMAIN
+from .const import DOMAIN, MODE_CLOUD, MODE_HYBRID
 
 PARALLEL_UPDATES = 0
+
+SITE_STATUS_DESCRIPTIONS = (
+    BinarySensorEntityDescription(
+        key="site_connection",
+        translation_key="site_connection",
+        device_class=BinarySensorDeviceClass.CONNECTIVITY,
+    ),
+    BinarySensorEntityDescription(
+        key="cloud_fallback",
+        translation_key="cloud_fallback",
+        device_class=BinarySensorDeviceClass.PROBLEM,
+    ),
+)
 
 
 async def async_setup_entry(hass, entry, async_add_entities):
     coordinator = entry.runtime_data
     known = set()
+    async_add_entities(
+        NeoomSiteStatus(coordinator, entry.entry_id, description)
+        for description in SITE_STATUS_DESCRIPTIONS
+        if description.key != "cloud_fallback" or coordinator.mode == MODE_HYBRID
+    )
 
     @callback
     def discover():
@@ -32,6 +54,34 @@ async def async_setup_entry(hass, entry, async_add_entities):
 
     discover()
     entry.async_on_unload(coordinator.async_add_listener(discover))
+
+
+class NeoomSiteStatus(CoordinatorEntity, BinarySensorEntity):
+    """Report site polling health independently from individual devices."""
+
+    _attr_has_entity_name = True
+    _attr_entity_category = EntityCategory.DIAGNOSTIC
+
+    def __init__(self, coordinator, entry_id, description):
+        super().__init__(coordinator)
+        self.entity_description = description
+        self._attr_unique_id = f"{entry_id}-{description.key}"
+        self._attr_device_info = {
+            "identifiers": {(DOMAIN, entry_id)},
+            "name": "neoom Energy Management",
+            "manufacturer": "neoom",
+        }
+
+    @property
+    def available(self):
+        # Connection must remain readable when polling fails; cached source must not.
+        return self.entity_description.key == "site_connection" or super().available
+
+    @property
+    def is_on(self):
+        if self.entity_description.key == "site_connection":
+            return self.coordinator.last_update_success
+        return self.coordinator.data.source == MODE_CLOUD
 
 
 class NeoomStatus(CoordinatorEntity, BinarySensorEntity):

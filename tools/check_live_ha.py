@@ -11,6 +11,7 @@ from unittest.mock import patch
 
 from aiohttp import ClientSession, TCPConnector, ThreadedResolver
 from homeassistant import loader
+from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers import frame
 from neoom_connect import BeaamLocalClient, NeoomCloudClient
 from neoom_connect.exceptions import ApiUnavailableError
@@ -20,12 +21,28 @@ from pytest_homeassistant_custom_component.common import MockConfigEntry, async_
 def summarize(hass, entry) -> dict:
     """Report counts and source without names, IDs or credentials."""
     states = hass.states.async_all()
+    registry = er.async_get(hass)
+    diagnostics = {}
+    for key, domain in (
+        ("data_source", "sensor"),
+        ("site_connection", "binary_sensor"),
+        ("cloud_fallback", "binary_sensor"),
+    ):
+        entity_id = registry.async_get_entity_id(domain, "neoom", f"{entry.entry_id}-{key}")
+        if entity_id:
+            diagnostics[key] = hass.states.get(entity_id).state
+    expected = {"data_source": entry.runtime_data.data.source, "site_connection": "on"}
+    if entry.runtime_data.mode == "hybrid":
+        expected["cloud_fallback"] = "on" if expected["data_source"] == "cloud" else "off"
+    if diagnostics != expected:
+        raise RuntimeError("Connection diagnostics do not match successful polling")
     return {
         "entities": len(states),
         "platforms": dict(Counter(state.domain for state in states)),
         "unknown": sum(state.state == "unknown" for state in states),
         "unavailable": sum(state.state == "unavailable" for state in states),
         "source": entry.runtime_data.data.source,
+        "diagnostics": diagnostics,
     }
 
 

@@ -43,6 +43,13 @@
   },
   "entity": {
     "sensor": {
+      "data_source": {
+        "name": "Data source",
+        "state": {
+          "local": "Local BEAAM",
+          "cloud": "Cloud"
+        }
+      },
       "power_production": {
         "name": "Production power"
       },
@@ -114,6 +121,12 @@
       }
     },
     "binary_sensor": {
+      "site_connection": {
+        "name": "Site connection"
+      },
+      "cloud_fallback": {
+        "name": "Cloud fallback active"
+      },
       "connection": {
         "name": "Connection"
       },

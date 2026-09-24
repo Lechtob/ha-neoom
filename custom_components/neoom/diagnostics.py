@@ -11,6 +11,10 @@ async def async_get_config_entry_diagnostics(hass: HomeAssistant, entry: ConfigE
         "mode": coordinator.mode,
         "source": coordinator.data.source,
         "last_update_success": coordinator.last_update_success,
+        "polling_intervals": {
+            "local_seconds": coordinator.local_interval,
+            "cloud_seconds": coordinator.cloud_interval,
+        },
         **diagnostic_report(
             coordinator.configuration, coordinator.data.flow, coordinator.data.things
         ),

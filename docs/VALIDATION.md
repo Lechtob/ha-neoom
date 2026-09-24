@@ -81,6 +81,25 @@ but no neoom integration error. Existing template sensors and the Energy Dashboa
 were not changed. Production cloud fallback was not forced; it was tested in the
 isolated core as described above.
 
+## Version 0.1.1 connection diagnostics
+
+64 automated tests pass, with 82% combined statement/branch coverage. New tests
+cover local/cloud/hybrid status entities, full connection loss, cached fallback,
+rate-limit expiry, authentication failures, partial device loss and reloads without
+duplicate diagnostic entities. Existing measurement identifiers remain unchanged.
+
+An isolated live hybrid test with real local and cloud reads discovered 107
+entities (94 sensors, 13 binary sensors). Data source, site connection and cloud
+fallback status followed local operation, simulated local failure, cached cloud
+readings and local recovery. Unknown/unavailable measurement counts matched the
+0.1.0 checks above. The cloud-only check discovered 12 entities with two unknown
+measurements, no unavailable entities and no hybrid-only fallback status. Both
+tests unloaded successfully. These tests did not change the production install.
+
+Only the custom component changes in version 0.1.1; the published
+`py-neoom-connect==0.1.0` library remains suitable. The checks above were isolated;
+production upgrade validation is recorded separately below when completed.
+
 ## Remaining validation
 
 - This is a point-in-time smoke test, not a long-running reliability test.

@@ -56,6 +56,19 @@ unterschiedlichen Verbindungsarten nicht doppelt eingerichtet.
 - Status: Verbindung und Fehlerstatus, sofern vom Geraet angeboten.
 - Diagnoseexport ohne API-Schluessel, Adressen, Standortnamen oder originale Geraete-IDs.
 
+Ab Version 0.1.1 ergaenzen Diagnoseentitaeten den Standort:
+
+- **Datenquelle**: lokaler BEAAM oder Cloud.
+- **Standortverbindung**: gueltige Standortdaten vorhanden. Im Hybridbetrieb gilt
+  das auch fuer Cloud-Daten innerhalb des vorgesehenen Cache-Intervalls; es ist
+  keine separate Echtzeit-Erreichbarkeitspruefung beider Schnittstellen.
+- **Cloud-Rueckfall aktiv**: nur im Hybridbetrieb, aktiv bei Cloud-Ersatzbetrieb.
+
+Bei vollstaendigem Ausfall zeigt die Standortverbindung getrennt an; Datenquelle
+und Cloud-Rueckfall werden nicht verfuegbar. Ein einzelnes ausgefallenes Geraet
+macht die weiterhin funktionierende Standortverbindung nicht getrennt.
+Der Diagnoseexport enthaelt ausserdem die eingestellten Abfrageintervalle.
+
 Technische Messwerte erscheinen als Diagnoseentitaeten. Nicht gelieferte Werte
 bleiben unbekannt; unveraenderte Zeitstempel allein machen einen Wert nicht
 unverfuegbar. Energiezaehler nutzen Wh und passende Statistikklassen fuer das
