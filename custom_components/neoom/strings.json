@@ -1,0 +1,139 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "neoom",
+        "data": {
+          "mode": "Connection mode"
+        }
+      },
+      "local": {
+        "title": "Local BEAAM",
+        "data": {
+          "host": "BEAAM host or IP address",
+          "local_token": "BEAAM API key"
+        }
+      },
+      "cloud": {
+        "title": "neoom Cloud",
+        "data": {
+          "cloud_token": "Cloud bearer token"
+        }
+      },
+      "site": {
+        "title": "Select site",
+        "data": {
+          "site_id": "Site"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Could not connect to neoom.",
+      "invalid_auth": "The API key is invalid or lacks access.",
+      "invalid_response": "The API returned unexpected data.",
+      "invalid_host": "Enter a hostname, IP address or HTTP(S) origin.",
+      "no_sites": "No accessible sites were found.",
+      "site_mismatch": "The cloud token does not grant access to this BEAAM site."
+    },
+    "abort": {
+      "already_configured": "This site is already configured.",
+      "wrong_site": "This connection belongs to a different site.",
+      "reauth_successful": "Credentials updated."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "power_production": {
+        "name": "Production power"
+      },
+      "power_consumption": {
+        "name": "Consumption power"
+      },
+      "power_consumption_calc": {
+        "name": "Calculated consumption power"
+      },
+      "power_grid": {
+        "name": "Grid power"
+      },
+      "power_storage": {
+        "name": "Storage power"
+      },
+      "state_of_charge": {
+        "name": "Storage state of charge"
+      },
+      "self_sufficiency": {
+        "name": "Self sufficiency"
+      },
+      "energy_produced": {
+        "name": "Produced energy"
+      },
+      "energy_imported": {
+        "name": "Imported energy"
+      },
+      "energy_exported": {
+        "name": "Exported energy"
+      },
+      "energy_charged": {
+        "name": "Charged energy"
+      },
+      "energy_discharged": {
+        "name": "Discharged energy"
+      },
+      "voltage": {
+        "name": "Voltage"
+      },
+      "current": {
+        "name": "Current"
+      },
+      "frequency": {
+        "name": "Frequency"
+      },
+      "power_appliances": {
+        "name": "Appliance power"
+      },
+      "power_charging_stations": {
+        "name": "Charging power"
+      },
+      "power_heating": {
+        "name": "Heating power"
+      },
+      "energy_consumed": {
+        "name": "Consumed energy"
+      },
+      "energy_consumed_calc": {
+        "name": "Calculated consumed energy"
+      },
+      "energy_appliances": {
+        "name": "Appliance energy"
+      },
+      "energy_charging_stations": {
+        "name": "Charging energy"
+      },
+      "energy_heating": {
+        "name": "Heating energy"
+      }
+    },
+    "binary_sensor": {
+      "connection": {
+        "name": "Connection"
+      },
+      "errors": {
+        "name": "Errors"
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Polling intervals",
+        "data": {
+          "local_interval": "Local interval (seconds)",
+          "cloud_interval": "Cloud interval (seconds)"
+        }
+      }
+    },
+    "error": {
+      "invalid_interval": "Local: 10 to 300 seconds. Cloud: 60 to 3600 seconds."
+    }
+  }
+}

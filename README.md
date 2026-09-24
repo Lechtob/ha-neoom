@@ -1,0 +1,93 @@
+# neoom CONNECT / BEAAM fuer Home Assistant
+
+Lesende Integration fuer Speicher, PV, Netz und angeschlossene Energiegeraete.
+Ein gemeinsames Python-Paket `neoom-connect` enthaelt getrennte Clients fuer die
+lokale BEAAM-API und die neoom-Cloud.
+
+## Aktueller Stand
+
+Die lokale API wurde an einem echten BEAAM geprueft. Ein isolierter Test mit
+Home Assistant 2026.9.3 hat acht Geraete und 104 Entitaeten eingerichtet,
+aktualisiert und wieder entladen. Details stehen in [docs/VALIDATION.md](docs/VALIDATION.md).
+Auch Cloud-only mit zehn Sensoren sowie Hybrid mit echten Cloud-Abfragen,
+simuliertem lokalem Ausfall und lokaler Wiederherstellung wurden erfolgreich geprueft.
+
+Die Veroeffentlichung auf PyPI und als HACS-Repository ist noch offen.
+Das Archiv allein ist vor der Paketveroeffentlichung keine fertige HACS-Installation.
+Die bestehende Home-Assistant-Installation wurde nicht veraendert.
+
+## Verbindungsarten
+
+| Modus | Einrichtung | Betrieb |
+| --- | --- | --- |
+| Lokal | BEAAM-Adresse und API-Key | Standardmaessig alle 20 Sekunden |
+| Cloud | Cloud-Token und Standortauswahl | Standardmaessig alle 120 Sekunden |
+| Hybrid | Beide Zugaenge zum selben Standort | Lokal bevorzugt, Cloud bei Verbindungsausfall |
+
+Im Hybridbetrieb werden Cloud-Abfragen begrenzt und lokale Abfragen weiterhin
+versucht. Bei lokaler Erholung schaltet die Integration zurueck. Lokale
+Geraetewerte und Energiezaehler, die die Cloud nicht liefert, werden waehrend
+des Fallbacks nicht verfuegbar. Sie werden weder als Null noch als alter Wert ausgegeben.
+
+Abfrageintervalle sind in den Integrationsoptionen einstellbar. Ungueltige
+Zugangsdaten starten eine erneute Anmeldung. Derselbe Standort wird auch bei
+unterschiedlichen Verbindungsarten nicht doppelt eingerichtet.
+
+## Messwerte
+
+- Standort: PV, Netz, Speicherleistung, Ladezustand, Verbrauch und Energiezaehler.
+- Geraete: skalare numerische Datenpunkte aus BEAAM-Metadaten, mit den gelieferten Einheiten.
+- Status: Verbindung und Fehlerstatus, sofern vom Geraet angeboten.
+- Diagnoseexport ohne API-Schluessel, Adressen, Standortnamen oder originale Geraete-IDs.
+
+Technische Messwerte erscheinen als Diagnoseentitaeten. Nicht gelieferte Werte
+bleiben unbekannt; unveraenderte Zeitstempel allein machen einen Wert nicht
+unverfuegbar. Energiezaehler nutzen Wh und passende Statistikklassen fuer das
+Energy Dashboard. Cloud-only liefert laut dokumentierter API keine Energiezaehler.
+
+Arrays einzelner PV-Kanaele und Steuerfunktionen sind noch nicht umgesetzt.
+Vorzeichen der API bleiben erhalten: Geraete- und Standortwerte koennen
+unterschiedliche Vorzeichenkonventionen haben.
+
+## Entwicklung und Tests
+
+Python 3.14 fuer die HA-Tests, mindestens Python 3.11 fuer die Bibliothek:
+
+```console
+python -m pip install -e ".[test,build]" -r requirements_test.txt
+python -m pytest
+ruff check packages custom_components tests tools
+```
+
+Die Tests verwenden den echten Home-Assistant-Kern und dessen Registries,
+mit ersetztem HTTP-Transport. Der Linux-Runner des pytest-Plugins wird nicht
+geladen, sodass diese Tests auch unter Windows laufen.
+
+Nur Bibliothek: `python -m pip install -e ".[test]"`, danach
+`python -m pytest --ignore=tests/ha`.
+
+Lesender Zugriff auf einen eigenen BEAAM, mit verdeckter Schluesselabfrage:
+
+```console
+python -m neoom_connect.probe 192.0.2.10 --output diagnostics-local.json
+```
+
+Alternativ nimmt `--key-file BEAAM_API-Key.txt` eine lokale Schluesseldatei.
+Der Bericht entfernt Identitaetsdaten; Messwerte bleiben fuer den Abgleich erhalten.
+
+Ein isolierter HA-Livetest ist mit `python -m tools.check_live_ha HOST --key-file PATH`
+aus dem Projektverzeichnis moeglich. Er verwendet echte Leseabfragen, einen
+temporaeren HA-Kern und aendert keine produktive HA-Installation.
+
+Cloud und Hybrid lassen sich mit separaten Schluesseldateien pruefen:
+
+```console
+python -m tools.check_live_ha HOST --mode cloud --cloud-key-file CONNECT_API-Key.txt --site-id-file CONNECT_Site-ID.txt
+python -m tools.check_live_ha HOST --mode hybrid --key-file BEAAM_API-Key.txt --cloud-key-file CONNECT_API-Key.txt --site-id-file CONNECT_Site-ID.txt
+```
+
+Der Hybridtest simuliert den lokalen Ausfall ausschliesslich im Testprozess.
+Schluessel und Standort-ID werden nicht ausgegeben und sind von Git ausgeschlossen.
+
+Build und Veroeffentlichung: [docs/RELEASE.md](docs/RELEASE.md).
+Architektur: [CONCEPT.md](CONCEPT.md).

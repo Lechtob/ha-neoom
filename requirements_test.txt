@@ -1,0 +1,3 @@
+# Integration tests use the actual HA core and registries through common helpers.
+pytest-homeassistant-custom-component==0.13.366
+ruff==0.16.8

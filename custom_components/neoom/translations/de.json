@@ -1,0 +1,139 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "neoom",
+        "data": {
+          "mode": "Verbindungsart"
+        }
+      },
+      "local": {
+        "title": "Lokaler BEAAM",
+        "data": {
+          "host": "BEAAM-Adresse",
+          "local_token": "BEAAM API-Schluessel"
+        }
+      },
+      "cloud": {
+        "title": "neoom Cloud",
+        "data": {
+          "cloud_token": "Cloud API-Schluessel"
+        }
+      },
+      "site": {
+        "title": "Standort auswaehlen",
+        "data": {
+          "site_id": "Standort"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Verbindung zu neoom fehlgeschlagen.",
+      "invalid_auth": "Der API-Schluessel ist ungueltig oder hat keine Berechtigung.",
+      "invalid_response": "Die API liefert ein unerwartetes Datenformat.",
+      "invalid_host": "Hostname, IP-Adresse oder HTTP(S)-Adresse eingeben.",
+      "no_sites": "Keine erreichbaren Standorte gefunden.",
+      "site_mismatch": "Der Cloud-Schluessel berechtigt nicht zum Zugriff auf diesen BEAAM-Standort."
+    },
+    "abort": {
+      "already_configured": "Dieser Standort ist bereits eingerichtet.",
+      "wrong_site": "Diese Verbindung gehoert zu einem anderen Standort.",
+      "reauth_successful": "Zugangsdaten aktualisiert."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "power_production": {
+        "name": "Erzeugungsleistung"
+      },
+      "power_consumption": {
+        "name": "Verbrauchsleistung"
+      },
+      "power_consumption_calc": {
+        "name": "Berechneter Verbrauch"
+      },
+      "power_grid": {
+        "name": "Netzleistung"
+      },
+      "power_storage": {
+        "name": "Speicherleistung"
+      },
+      "state_of_charge": {
+        "name": "Ladezustand"
+      },
+      "self_sufficiency": {
+        "name": "Autarkie"
+      },
+      "energy_produced": {
+        "name": "Erzeugte Energie"
+      },
+      "energy_imported": {
+        "name": "Netzbezug"
+      },
+      "energy_exported": {
+        "name": "Netzeinspeisung"
+      },
+      "energy_charged": {
+        "name": "Geladene Energie"
+      },
+      "energy_discharged": {
+        "name": "Entladene Energie"
+      },
+      "voltage": {
+        "name": "Spannung"
+      },
+      "current": {
+        "name": "Strom"
+      },
+      "frequency": {
+        "name": "Frequenz"
+      },
+      "power_appliances": {
+        "name": "Verbraucherleistung"
+      },
+      "power_charging_stations": {
+        "name": "Ladeleistung"
+      },
+      "power_heating": {
+        "name": "Heizleistung"
+      },
+      "energy_consumed": {
+        "name": "Verbrauchte Energie"
+      },
+      "energy_consumed_calc": {
+        "name": "Berechnete Verbrauchsenergie"
+      },
+      "energy_appliances": {
+        "name": "Verbraucherenergie"
+      },
+      "energy_charging_stations": {
+        "name": "Ladeenergie"
+      },
+      "energy_heating": {
+        "name": "Heizenergie"
+      }
+    },
+    "binary_sensor": {
+      "connection": {
+        "name": "Verbindung"
+      },
+      "errors": {
+        "name": "Fehler"
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Abfrageintervalle",
+        "data": {
+          "local_interval": "Lokales Intervall (Sekunden)",
+          "cloud_interval": "Cloud-Intervall (Sekunden)"
+        }
+      }
+    },
+    "error": {
+      "invalid_interval": "Lokal: 10 bis 300 Sekunden. Cloud: 60 bis 3600 Sekunden."
+    }
+  }
+}

@@ -1,0 +1,30 @@
+name: Tests and packages
+on: [push, pull_request, workflow_dispatch]
+permissions:
+  contents: read
+jobs:
+  library:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install -e '.[test]'
+      - run: pytest --ignore=tests/ha
+  integration:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.14'
+      - run: python -m pip install -e '.[test,build]' -r requirements_test.txt
+      - run: ruff check packages custom_components tests tools
+      - run: pytest --cov=custom_components.neoom --cov=neoom_connect --cov-branch
+      - run: python -m build
+      - run: python tools/build_hacs_zip.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: neoom-packages
+          path: dist/
