@@ -146,3 +146,20 @@ async def test_auth_failure_marks_connection_off(hass, clients, entry):
     assert entity(hass, entry, "data_source", "sensor").state == "unavailable"
     assert entity(hass, entry, "cloud_fallback").state == "unavailable"
     clients[1].get_latest_energy_flow.assert_not_called()
+
+
+async def test_six_hour_simulated_outage_keeps_counters_unavailable(hass, clients, entry):
+    coordinator = await setup(hass, entry, "hybrid")
+    original = entity(hass, entry, "energy_imported", "sensor").state
+    clients[0].get_site_state.side_effect = ApiUnavailableError("offline")
+    clients[1].get_latest_energy_flow.side_effect = RateLimitError(300)
+    for tick in range(0, 6 * 3600, 60):
+        with patch("custom_components.neoom.coordinator.monotonic", return_value=1000 + tick):
+            await coordinator.async_refresh()
+        assert entity(hass, entry, "energy_imported", "sensor").state == "unavailable"
+        assert entity(hass, entry, "site_connection").state == "off"
+    assert clients[1].get_latest_energy_flow.await_count == 72
+    clients[0].get_site_state.side_effect = None
+    await coordinator.async_refresh()
+    assert entity(hass, entry, "energy_imported", "sensor").state == original
+    assert entity(hass, entry, "site_connection").state == "on"

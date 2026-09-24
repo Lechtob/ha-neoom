@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.2.0 (2026-09-24)
+
+- Reconfigure BEAAM address and optional replacement API keys through Home Assistant;
+  validate both connections before saving and reject any change of site.
+- Keep existing keys when replacement fields are empty; retain entry identity,
+  polling options and existing measurement unique IDs.
+- Link devices to the site using the current Home Assistant device registry API;
+  show device types and distinguish duplicate device names with stable suffixes.
+- Translate common technical measurements into English and German.
+- Discover individual BEAAM input-power, voltage and current channels from verified
+  numeric arrays; keep channel IDs stable on reload and mark absent channels unavailable.
+- Add regression checks for six simulated hours of rate-limited connection failure.
+- The Python dependency remains `py-neoom-connect==0.1.0`; this release is read-only.
+
 ## 0.1.1 (2026-09-24)
 
 - Add diagnostic entities for the active data source and site connection.

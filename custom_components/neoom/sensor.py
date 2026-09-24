@@ -29,9 +29,43 @@ from neoom_connect import DataPoint, State
 from neoom_connect.diagnostics import numeric_value
 from neoom_connect.units import normalize_unit
 
-from .const import DOMAIN, MODE_CLOUD, MODE_LOCAL
+from .const import MODE_CLOUD, MODE_LOCAL
+from .device import device_info
 
 PARALLEL_UPDATES = 0
+
+ARRAY_CHANNELS = {"INPUTS_POWER": "W", "VOLTAGES": "V", "CURRENTS": "A"}
+MAX_CHANNELS = 64
+TRANSLATED_POINTS = {
+    "ACTIVE_POWER",
+    "REACTIVE_POWER",
+    "APPARENT_POWER",
+    "POWER_FACTOR",
+    "POWER",
+    "ACTIVE_POWER_LIMIT",
+    "MAX_POWER_GRID_FEED_IN",
+    "MAX_CURRENT_CHARGE",
+    "MAX_CURRENT_DISCHARGE",
+    "MAX_POWER_CHARGE",
+    "MAX_POWER_DISCHARGE",
+    "TARGET_POWER",
+    "MIN_SOC",
+    "MIN_SOC_BACKUP_ENERGY",
+    "MIN_SOC_SELF_CONSUMPTION_OPT",
+    "CHARGED_ENERGY",
+    "DISCHARGED_ENERGY",
+    "INPUT_ENERGY",
+    "OUTPUT_ENERGY",
+    "PRODUCED_ENERGY",
+    "CONSUMED_ENERGY_TOTAL",
+    "CHARGING_PROCESS_ENERGY",
+    "CHARGING_TIME",
+    *(
+        f"{quantity}_P{phase}"
+        for quantity in ("VOLTAGE", "CURRENT", "POWER")
+        for phase in (1, 2, 3)
+    ),
+}
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -181,7 +215,7 @@ async def async_setup_entry(
 ) -> None:
     """Set up neoom sensors from a config entry."""
     coordinator = entry.runtime_data
-    known: set[tuple[str | None, str]] = set()
+    known: set[tuple[str | None, str, int | None]] = set()
     async_add_entities([NeoomDataSourceSensor(entry.entry_id, coordinator)])
 
     @callback
@@ -191,11 +225,13 @@ async def async_setup_entry(
         configuration = coordinator.configuration
         if configuration:
             for point in configuration.energy_flow_data_points.values():
+                if point.data_type != "NUMBER":
+                    continue
                 description = describe_point(point)
                 if description:
                     descriptions[point.key] = description
         for description in descriptions.values():
-            identity = (None, description.key)
+            identity = (None, description.key, None)
             if identity not in known and (
                 description.key in coordinator.data.flow.states
                 or configuration
@@ -209,20 +245,31 @@ async def async_setup_entry(
         if configuration:
             for thing in configuration.things.values():
                 for point in thing.data_points.values():
-                    identity = (thing.id, point.key)
                     description = describe_point(point)
-                    if identity in known or description is None:
+                    if description is None:
                         continue
-                    known.add(identity)
-                    entities.append(
-                        NeoomEnergyFlowSensor(
-                            entry.entry_id,
-                            coordinator,
-                            description,
-                            thing_id=thing.id,
-                            thing_name=thing.name or thing.type,
+                    indices: list[int | None] = [None]
+                    if point.data_type == "NUMBER_ARRAY[]":
+                        state = coordinator.data.things.get(thing.id, {}).get(point.key)
+                        if state is None or not isinstance(state.value, list):
+                            continue
+                        if any(isinstance(value, (list, dict)) for value in state.value):
+                            continue
+                        indices = list(range(min(len(state.value), MAX_CHANNELS)))
+                    for index in indices:
+                        identity = (thing.id, point.key, index)
+                        if identity in known:
+                            continue
+                        known.add(identity)
+                        entities.append(
+                            NeoomEnergyFlowSensor(
+                                entry.entry_id,
+                                coordinator,
+                                description,
+                                thing_id=thing.id,
+                                array_index=index,
+                            )
                         )
-                    )
         async_add_entities(entities)
 
     discover()
@@ -241,11 +288,7 @@ class NeoomDataSourceSensor(CoordinatorEntity, SensorEntity):
     def __init__(self, entry_id, coordinator):
         super().__init__(coordinator)
         self._attr_unique_id = f"{entry_id}-data_source"
-        self._attr_device_info = {
-            "identifiers": {(DOMAIN, entry_id)},
-            "name": "neoom Energy Management",
-            "manufacturer": "neoom",
-        }
+        self._attr_device_info = device_info(entry_id)
 
     @property
     def native_value(self):
@@ -265,18 +308,22 @@ class NeoomEnergyFlowSensor(CoordinatorEntity, SensorEntity):
         description: NeoomSensorDescription,
         *,
         thing_id: str | None = None,
-        thing_name: str | None = None,
+        array_index: int | None = None,
     ) -> None:
         super().__init__(coordinator)
         self.entity_description = description
         self.thing_id = thing_id
+        self.array_index = array_index
         device_id = f"{entry_id}-{thing_id}" if thing_id else entry_id
         self._attr_unique_id = f"{device_id}-{description.key.lower()}"
-        self._attr_device_info = {
-            "identifiers": {(DOMAIN, device_id)},
-            "name": thing_name or "neoom Energy Management",
-            "manufacturer": "neoom",
-        }
+        if array_index is not None:
+            self._attr_unique_id += f"-channel-{array_index + 1}"
+            self._attr_translation_placeholders = {"channel": str(array_index + 1)}
+        configuration = coordinator.configuration
+        thing = configuration.things[thing_id] if configuration and thing_id else None
+        self._attr_device_info = device_info(
+            entry_id, thing, configuration, via_device_id=coordinator.site_device_id
+        )
 
     @property
     def _state(self) -> State | None:
@@ -287,7 +334,14 @@ class NeoomEnergyFlowSensor(CoordinatorEntity, SensorEntity):
     @property
     def native_value(self) -> Any:
         state = self._state
-        value = numeric_value(state.value) if state else None
+        value = state.value if state else None
+        if self.array_index is not None:
+            value = (
+                value[self.array_index]
+                if isinstance(value, list) and self.array_index < len(value)
+                else None
+            )
+        value = numeric_value(value)
         if (
             value is not None
             and self.coordinator.data.source == "cloud"
@@ -299,6 +353,10 @@ class NeoomEnergyFlowSensor(CoordinatorEntity, SensorEntity):
     @property
     def available(self) -> bool:
         if not super().available or self._state is None:
+            return False
+        if self.array_index is not None and (
+            not isinstance(self._state.value, list) or self.array_index >= len(self._state.value)
+        ):
             return False
         # BEAAM timestamps describe changes, not successful polling heartbeats.
         if self.thing_id:
@@ -318,7 +376,12 @@ class NeoomEnergyFlowSensor(CoordinatorEntity, SensorEntity):
 
 
 def describe_point(point: DataPoint) -> NeoomSensorDescription | None:
-    """Prefer device-provided units; expose scalar measurements only."""
+    """Prefer device-provided units; only expand documented power/voltage/current arrays."""
+    if point.data_type == "NUMBER_ARRAY[]":
+        if point.key not in ARRAY_CHANNELS or point.unit != ARRAY_CHANNELS[point.key]:
+            return None
+        scalar = describe_point(replace(point, data_type="NUMBER"))
+        return replace(scalar, name=None, translation_key=point.key.lower())
     if point.data_type != "NUMBER":
         return None
     unit = normalize_unit(point.unit)
@@ -368,4 +431,6 @@ def describe_point(point: DataPoint) -> NeoomSensorDescription | None:
         description = replace(
             description, name=None, translation_key=known.translation_key, entity_category=None
         )
+    elif point.key in TRANSLATED_POINTS:
+        description = replace(description, name=None, translation_key=point.key.lower())
     return description

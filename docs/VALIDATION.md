@@ -100,12 +100,41 @@ Only the custom component changes in version 0.1.1; the published
 `py-neoom-connect==0.1.0` library remains suitable. The checks above were isolated;
 production upgrade validation is recorded separately below when completed.
 
+## Production upgrade to 0.1.1
+
+GitHub tests, HACS and Hassfest passed. HACS installed `v0.1.1`, HA restarted and
+the existing entry loaded successfully. All 104 existing entity IDs were retained;
+three diagnostic entities were added. The source was local, site connection on,
+and cloud fallback off. Each of the five main energy counters had six recorded
+five-minute intervals with no negative changes in the queried window. This is a
+short-term observation, not a long-duration reliability result.
+
+## Version 0.2.0 checks
+
+100 tests pass with 84% combined statement/branch coverage. Reconfigure tests cover
+all modes, credential retention/replacement, site mismatch, failed validation and
+preserved identity/options. Channel tests cover units, malformed/missing arrays,
+invalid numeric values, shrinking/growing arrays, reloads and cloud fallback.
+The device link uses `via_device_id`, as required by the current HA registry API.
+
+A six-hour outage is simulated by advancing the retry clock in the test process:
+energy counters stay unavailable, 300-second cloud retry limits are respected,
+and the original counter value returns after local recovery. No production outage
+was induced; this is not a six-hour live soak test.
+
+An isolated live hybrid test found 121 entities, including 14 new input-power,
+voltage and current channels. All new channels recovered after simulated fallback.
+Initial/recovered states: 11 unknown, zero unavailable. Cloud fallback: two unknown,
+108 unavailable local-only measurements. Unload succeeded. Because this sample
+was taken at night, nonzero daytime PV channel readings remain to be checked.
+
 ## Remaining validation
 
 - This is a point-in-time smoke test, not a long-running reliability test.
 - Long-term reliability and Energy Dashboard statistics remain to be validated.
-- Numeric array channels (for example individual PV strings) and writable
-  controls are not exposed yet.
+- Nonzero daytime channel readings, other array keys and writable controls are
+  not validated. Only the verified read-only channel keys are exposed.
+- Migration of existing YAML templates awaits their definition; see [MIGRATION.md](MIGRATION.md).
 
 ## Official schemas
 

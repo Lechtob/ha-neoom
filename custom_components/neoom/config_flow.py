@@ -189,6 +189,56 @@ class NeoomConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             return await self.async_step_cloud()
         return await self.async_step_local()
 
+    async def async_step_reconfigure(self, user_input=None):
+        """Validate replacement connection settings without changing site identity."""
+        entry = self._get_reconfigure_entry()
+        mode = entry.data[CONF_MODE]
+        errors = {}
+        if user_input is not None:
+            updates = dict(user_input)
+            # Empty password fields retain the existing secret; never echo it in the form.
+            for key in (CONF_LOCAL_TOKEN, CONF_CLOUD_TOKEN):
+                if not updates.get(key):
+                    updates.pop(key, None)
+            data = {**entry.data, **updates}
+            try:
+                if mode != MODE_CLOUD:
+                    updates[CONF_HOST] = normalize_host(data[CONF_HOST])
+                    local = BeaamLocalClient(
+                        updates[CONF_HOST],
+                        data[CONF_LOCAL_TOKEN],
+                        session=async_get_clientsession(self.hass),
+                        timeout=10,
+                    )
+                    site = await local.get_site_configuration()
+                    if site.site_id != entry.data[CONF_SITE_ID]:
+                        return self.async_abort(reason="wrong_site")
+                if mode != MODE_LOCAL:
+                    cloud = NeoomCloudClient(
+                        data[CONF_CLOUD_TOKEN], session=async_get_clientsession(self.hass)
+                    )
+                    sites = await cloud.get_sites()
+                    if entry.data[CONF_SITE_ID] not in {site.id for site in sites}:
+                        return self.async_abort(reason="wrong_site")
+                return self.async_update_reload_and_abort(entry, data_updates=updates)
+            except AuthenticationError:
+                errors["base"] = "invalid_auth"
+            except InvalidResponseError:
+                errors["base"] = "invalid_response"
+            except NeoomConnectError:
+                errors["base"] = "cannot_connect"
+            except ValueError:
+                errors[CONF_HOST] = "invalid_host"
+        fields = {}
+        if mode != MODE_CLOUD:
+            fields[vol.Required(CONF_HOST, default=entry.data[CONF_HOST])] = str
+            fields[vol.Optional(CONF_LOCAL_TOKEN)] = PASSWORD
+        if mode != MODE_LOCAL:
+            fields[vol.Optional(CONF_CLOUD_TOKEN)] = PASSWORD
+        return self.async_show_form(
+            step_id="reconfigure", data_schema=vol.Schema(fields), errors=errors
+        )
+
 
 class NeoomOptionsFlow(config_entries.OptionsFlow):
     async def async_step_init(self, user_input=None):

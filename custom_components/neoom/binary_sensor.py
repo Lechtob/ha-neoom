@@ -9,7 +9,8 @@ from homeassistant.core import callback
 from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
-from .const import DOMAIN, MODE_CLOUD, MODE_HYBRID
+from .const import MODE_CLOUD, MODE_HYBRID
+from .device import device_info
 
 PARALLEL_UPDATES = 0
 
@@ -66,11 +67,7 @@ class NeoomSiteStatus(CoordinatorEntity, BinarySensorEntity):
         super().__init__(coordinator)
         self.entity_description = description
         self._attr_unique_id = f"{entry_id}-{description.key}"
-        self._attr_device_info = {
-            "identifiers": {(DOMAIN, entry_id)},
-            "name": "neoom Energy Management",
-            "manufacturer": "neoom",
-        }
+        self._attr_device_info = device_info(entry_id)
 
     @property
     def available(self):
@@ -99,11 +96,9 @@ class NeoomStatus(CoordinatorEntity, BinarySensorEntity):
             if key == "ERROR_CODES"
             else BinarySensorDeviceClass.CONNECTIVITY
         )
-        self._attr_device_info = {
-            "identifiers": {(DOMAIN, f"{entry_id}-{thing.id}")},
-            "name": thing.name or thing.type,
-            "manufacturer": "neoom",
-        }
+        self._attr_device_info = device_info(
+            entry_id, thing, coordinator.configuration, via_device_id=coordinator.site_device_id
+        )
 
     @property
     def available(self):

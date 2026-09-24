@@ -49,6 +49,11 @@ Abfrageintervalle sind in den Integrationsoptionen einstellbar. Ungueltige
 Zugangsdaten starten eine erneute Anmeldung. Derselbe Standort wird auch bei
 unterschiedlichen Verbindungsarten nicht doppelt eingerichtet.
 
+Ab Version 0.2.0 lassen sich ueber **Neu konfigurieren** die BEAAM-Adresse und
+API-Schluessel aendern. Leere Schluesselfelder behalten den bisherigen Schluessel.
+Die Verbindungen werden vor dem Speichern geprueft; der Standort und die
+Verbindungsart bleiben unveraendert. Entitaets-IDs und Historie bleiben erhalten.
+
 ## Messwerte
 
 - Standort: PV, Netz, Speicherleistung, Ladezustand, Verbrauch und Energiezaehler.
@@ -74,7 +79,12 @@ bleiben unbekannt; unveraenderte Zeitstempel allein machen einen Wert nicht
 unverfuegbar. Energiezaehler nutzen Wh und passende Statistikklassen fuer das
 Energy Dashboard. Cloud-only liefert laut dokumentierter API keine Energiezaehler.
 
-Arrays einzelner PV-Kanaele und Steuerfunktionen sind noch nicht umgesetzt.
+Ab Version 0.2.0 werden `INPUTS_POWER`, `VOLTAGES` und `CURRENTS` als einzelne
+Kanaele mit festen, bei 1 beginnenden Nummern angezeigt. Diese Nummern folgen der
+Reihenfolge in der BEAAM-API und sind keine zugesicherte physische String-Zuordnung.
+Die Erkennung erfolgt bei lokalen Abfragen und ist auf 64 Kanaele je Datenpunkt
+begrenzt. Fehlende Kanaele werden nicht verfuegbar; ungueltige Werte bleiben unbekannt.
+Andere Arraytypen und Steuerfunktionen sind weiterhin nicht umgesetzt.
 Vorzeichen der API bleiben erhalten: Geraete- und Standortwerte koennen
 unterschiedliche Vorzeichenkonventionen haben.
 

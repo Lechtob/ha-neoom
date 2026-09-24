@@ -20,6 +20,15 @@
           "cloud_token": "Cloud API-Schluessel"
         }
       },
+      "reconfigure": {
+        "title": "Verbindung neu konfigurieren",
+        "description": "Leere Schluesselfelder behalten den bisherigen Schluessel. Standort und Verbindungsart bleiben unveraendert.",
+        "data": {
+          "host": "BEAAM-Adresse",
+          "local_token": "Neuer BEAAM API-Schluessel (optional)",
+          "cloud_token": "Neuer Cloud API-Schluessel (optional)"
+        }
+      },
       "site": {
         "title": "Standort auswaehlen",
         "data": {
@@ -36,6 +45,7 @@
       "site_mismatch": "Der Cloud-Schluessel berechtigt nicht zum Zugriff auf diesen BEAAM-Standort."
     },
     "abort": {
+      "reconfigure_successful": "Verbindung aktualisiert.",
       "already_configured": "Dieser Standort ist bereits eingerichtet.",
       "wrong_site": "Diese Verbindung gehoert zu einem anderen Standort.",
       "reauth_successful": "Zugangsdaten aktualisiert."
@@ -43,6 +53,111 @@
   },
   "entity": {
     "sensor": {
+      "active_power": {
+        "name": "Wirkleistung"
+      },
+      "reactive_power": {
+        "name": "Blindleistung"
+      },
+      "apparent_power": {
+        "name": "Scheinleistung"
+      },
+      "power_factor": {
+        "name": "Leistungsfaktor"
+      },
+      "power": {
+        "name": "Leistung"
+      },
+      "active_power_limit": {
+        "name": "Wirkleistungsbegrenzung"
+      },
+      "max_power_grid_feed_in": {
+        "name": "Maximale Einspeiseleistung"
+      },
+      "max_current_charge": {
+        "name": "Maximaler Ladestrom"
+      },
+      "max_current_discharge": {
+        "name": "Maximaler Entladestrom"
+      },
+      "max_power_charge": {
+        "name": "Maximale Ladeleistung"
+      },
+      "max_power_discharge": {
+        "name": "Maximale Entladeleistung"
+      },
+      "target_power": {
+        "name": "Sollleistung"
+      },
+      "min_soc": {
+        "name": "Minimaler Ladezustand"
+      },
+      "min_soc_backup_energy": {
+        "name": "Notstromreserve"
+      },
+      "min_soc_self_consumption_opt": {
+        "name": "Reserve fuer Eigenverbrauch"
+      },
+      "charged_energy": {
+        "name": "Geladene Energie"
+      },
+      "discharged_energy": {
+        "name": "Entladene Energie"
+      },
+      "input_energy": {
+        "name": "Eingangsenergie"
+      },
+      "output_energy": {
+        "name": "Ausgangsenergie"
+      },
+      "produced_energy": {
+        "name": "Erzeugte Energie"
+      },
+      "consumed_energy_total": {
+        "name": "Gesamtverbrauch"
+      },
+      "charging_process_energy": {
+        "name": "Energie des Ladevorgangs"
+      },
+      "charging_time": {
+        "name": "Ladedauer"
+      },
+      "inputs_power": {
+        "name": "Eingangsleistung Kanal {channel}"
+      },
+      "voltages": {
+        "name": "Spannung Kanal {channel}"
+      },
+      "currents": {
+        "name": "Strom Kanal {channel}"
+      },
+      "voltage_p1": {
+        "name": "Spannung Phase 1"
+      },
+      "voltage_p2": {
+        "name": "Spannung Phase 2"
+      },
+      "voltage_p3": {
+        "name": "Spannung Phase 3"
+      },
+      "current_p1": {
+        "name": "Strom Phase 1"
+      },
+      "current_p2": {
+        "name": "Strom Phase 2"
+      },
+      "current_p3": {
+        "name": "Strom Phase 3"
+      },
+      "power_p1": {
+        "name": "Leistung Phase 1"
+      },
+      "power_p2": {
+        "name": "Leistung Phase 2"
+      },
+      "power_p3": {
+        "name": "Leistung Phase 3"
+      },
       "data_source": {
         "name": "Datenquelle",
         "state": {

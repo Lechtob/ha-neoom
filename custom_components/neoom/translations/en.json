@@ -20,6 +20,15 @@
           "cloud_token": "Cloud bearer token"
         }
       },
+      "reconfigure": {
+        "title": "Update connection",
+        "description": "Leave a key empty to keep the existing key. The site and connection mode stay unchanged.",
+        "data": {
+          "host": "BEAAM host or IP address",
+          "local_token": "New BEAAM API key (optional)",
+          "cloud_token": "New cloud bearer token (optional)"
+        }
+      },
       "site": {
         "title": "Select site",
         "data": {
@@ -36,6 +45,7 @@
       "site_mismatch": "The cloud token does not grant access to this BEAAM site."
     },
     "abort": {
+      "reconfigure_successful": "Connection updated.",
       "already_configured": "This site is already configured.",
       "wrong_site": "This connection belongs to a different site.",
       "reauth_successful": "Credentials updated."
@@ -43,6 +53,111 @@
   },
   "entity": {
     "sensor": {
+      "active_power": {
+        "name": "Active power"
+      },
+      "reactive_power": {
+        "name": "Reactive power"
+      },
+      "apparent_power": {
+        "name": "Apparent power"
+      },
+      "power_factor": {
+        "name": "Power factor"
+      },
+      "power": {
+        "name": "Power"
+      },
+      "active_power_limit": {
+        "name": "Active power limit"
+      },
+      "max_power_grid_feed_in": {
+        "name": "Maximum grid feed-in power"
+      },
+      "max_current_charge": {
+        "name": "Maximum charging current"
+      },
+      "max_current_discharge": {
+        "name": "Maximum discharging current"
+      },
+      "max_power_charge": {
+        "name": "Maximum charging power"
+      },
+      "max_power_discharge": {
+        "name": "Maximum discharging power"
+      },
+      "target_power": {
+        "name": "Target power"
+      },
+      "min_soc": {
+        "name": "Minimum state of charge"
+      },
+      "min_soc_backup_energy": {
+        "name": "Backup energy reserve"
+      },
+      "min_soc_self_consumption_opt": {
+        "name": "Self-consumption reserve"
+      },
+      "charged_energy": {
+        "name": "Charged energy"
+      },
+      "discharged_energy": {
+        "name": "Discharged energy"
+      },
+      "input_energy": {
+        "name": "Input energy"
+      },
+      "output_energy": {
+        "name": "Output energy"
+      },
+      "produced_energy": {
+        "name": "Produced energy"
+      },
+      "consumed_energy_total": {
+        "name": "Total consumed energy"
+      },
+      "charging_process_energy": {
+        "name": "Charging session energy"
+      },
+      "charging_time": {
+        "name": "Charging time"
+      },
+      "inputs_power": {
+        "name": "Input power channel {channel}"
+      },
+      "voltages": {
+        "name": "Voltage channel {channel}"
+      },
+      "currents": {
+        "name": "Current channel {channel}"
+      },
+      "voltage_p1": {
+        "name": "Voltage phase 1"
+      },
+      "voltage_p2": {
+        "name": "Voltage phase 2"
+      },
+      "voltage_p3": {
+        "name": "Voltage phase 3"
+      },
+      "current_p1": {
+        "name": "Current phase 1"
+      },
+      "current_p2": {
+        "name": "Current phase 2"
+      },
+      "current_p3": {
+        "name": "Current phase 3"
+      },
+      "power_p1": {
+        "name": "Power phase 1"
+      },
+      "power_p2": {
+        "name": "Power phase 2"
+      },
+      "power_p3": {
+        "name": "Power phase 3"
+      },
       "data_source": {
         "name": "Data source",
         "state": {

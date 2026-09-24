@@ -44,6 +44,8 @@ class NeoomData:
 class NeoomCoordinator(DataUpdateCoordinator[NeoomData]):
     """Poll locally; cloud readings never fill missing local energy counters."""
 
+    site_device_id: str
+
     def __init__(self, hass: HomeAssistant, entry: ConfigEntry) -> None:
         self.mode = entry.data[CONF_MODE]
         self.site_id = entry.data.get(CONF_SITE_ID)
