@@ -60,10 +60,31 @@ archive inspection confirmed no local key or diagnostic report was included.
 Overall statement/branch coverage reported by pytest-cov was 81%; the probe CLI
 was exercised manually against the real BEAAM instead of in the unit suite.
 
+## Published package and production installation
+
+`py-neoom-connect==0.1.0` was published through GitHub Trusted Publishing and
+installed directly from PyPI into a fresh virtual environment. Both public
+client classes imported successfully in isolated Python mode. GitHub tests,
+Hassfest and HACS validation passed. The integration release is `v0.1.0`.
+
+HACS installed that release into Home Assistant 2026.9.3. Configuration validation
+passed before the restart. After restart, the official config flow created a
+hybrid entry, which reached the `loaded` state using the real local BEAAM and
+cloud credentials. Nine device-registry entries represent the site and eight
+devices; 93 numeric sensors and 11 binary sensors were registered. Eleven
+measurements were unknown, zero entities were unavailable, and the active source
+was local. A subsequent automatic poll updated consumption, grid and storage power.
+
+Energy counters expose Wh and `total_increasing` metadata where appropriate.
+The current log window contained the expected custom-integration loader warning,
+but no neoom integration error. Existing template sensors and the Energy Dashboard
+were not changed. Production cloud fallback was not forced; it was tested in the
+isolated core as described above.
+
 ## Remaining validation
 
 - This is a point-in-time smoke test, not a long-running reliability test.
-- Production installation, restart and long-term energy statistics remain open.
+- Long-term reliability and Energy Dashboard statistics remain to be validated.
 - Numeric array channels (for example individual PV strings) and writable
   controls are not exposed yet.
 
