@@ -12,9 +12,25 @@ aktualisiert und wieder entladen. Details stehen in [docs/VALIDATION.md](docs/VA
 Auch Cloud-only mit zehn Sensoren sowie Hybrid mit echten Cloud-Abfragen,
 simuliertem lokalem Ausfall und lokaler Wiederherstellung wurden erfolgreich geprueft.
 
-Die Veroeffentlichung auf PyPI und als HACS-Repository ist noch offen.
-Das Archiv allein ist vor der Paketveroeffentlichung keine fertige HACS-Installation.
-Die bestehende Home-Assistant-Installation wurde nicht veraendert.
+## Installation
+
+Voraussetzung: Home Assistant 2026.9 oder neuer und HACS. Die Python-Abhaengigkeit
+[`py-neoom-connect==0.1.0`](https://pypi.org/project/py-neoom-connect/0.1.0/)
+ist auf PyPI veroeffentlicht.
+
+1. In HACS `https://github.com/Lechtob/ha-neoom` als benutzerdefiniertes Repository
+   der Kategorie **Integration** hinzufuegen.
+2. **neoom CONNECT / BEAAM** herunterladen und Home Assistant neu starten.
+3. Unter **Einstellungen > Geraete & Dienste > Integration hinzufuegen** nach
+   **neoom** suchen und Lokal, Cloud oder Hybrid auswaehlen.
+4. Fuer Lokal die BEAAM-Adresse und den lokalen API-Key eingeben. Fuer Cloud
+   den Cloud-Token eingeben und den Standort auswaehlen. Hybrid benoetigt beide
+   Zugaenge zum selben Standort und bevorzugt die lokale Verbindung.
+
+Home Assistant installiert die Python-Abhaengigkeit automatisch. Die Schluessel
+werden nur im Einrichtungsdialog eingegeben; sie gehoeren nicht ins Repository.
+Die Bibliothek kann unabhaengig mit `pip install py-neoom-connect` genutzt werden;
+der Python-Import lautet `neoom_connect`.
 
 ## Verbindungsarten
 

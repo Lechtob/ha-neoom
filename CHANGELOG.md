@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.1.0 (unreleased)
+## 0.1.0 (2026-09-24)
 
 - Async local BEAAM and cloud clients in one standalone Python package.
 - Parse documented cloud time-series objects, UTC timestamps and local metadata.
@@ -12,4 +12,4 @@
 - Preserve unchanged measurements regardless of their last-change timestamp.
 - Redacted diagnostics, a read-only device probe and an isolated HA live check.
 - Library and actual Home Assistant setup, entity, failure and config-flow tests.
-- HACS metadata and reproducible package checks; publication is still pending.
+- HACS metadata and reproducible package checks; Python package published as `py-neoom-connect`.
