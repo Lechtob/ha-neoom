@@ -6,11 +6,14 @@ lokale BEAAM-API und die neoom-Cloud.
 
 ## Aktueller Stand
 
-Die lokale API wurde an einem echten BEAAM geprueft. Ein isolierter Test mit
-Home Assistant 2026.9.3 hat acht Geraete und 104 Entitaeten eingerichtet,
-aktualisiert und wieder entladen. Details stehen in [docs/VALIDATION.md](docs/VALIDATION.md).
-Auch Cloud-only mit zehn Sensoren sowie Hybrid mit echten Cloud-Abfragen,
-simuliertem lokalem Ausfall und lokaler Wiederherstellung wurden erfolgreich geprueft.
+Version 0.2.1 ist in Home Assistant 2026.9.3 an einem echten BEAAM installiert:
+acht Geraete plus Standort, 121 Entitaeten einschliesslich 14 einzelner PV- und
+Wechselrichterkanaele. Vorhandene Entitaets-IDs bleiben bei Updates erhalten.
+114 automatisierte Tests bestehen. Cloud-only und Hybrid mit echten
+Cloud-Abfragen, simuliertem lokalem Ausfall und lokaler Wiederherstellung wurden
+zusaetzlich isoliert geprueft. Mehrtaegige Beobachtung, Tageslichtwerte und die
+Umstellung bestehender YAML-Sensoren stehen noch aus.
+Details stehen in [docs/VALIDATION.md](docs/VALIDATION.md).
 
 ## Installation
 
@@ -78,6 +81,13 @@ Technische Messwerte erscheinen als Diagnoseentitaeten. Nicht gelieferte Werte
 bleiben unbekannt; unveraenderte Zeitstempel allein machen einen Wert nicht
 unverfuegbar. Energiezaehler nutzen Wh und passende Statistikklassen fuer das
 Energy Dashboard. Cloud-only liefert laut dokumentierter API keine Energiezaehler.
+
+Ab Version 0.2.1 nutzen berechnete Verbrauchsenergie (`ENERGY_CONSUMED_CALC`) und
+Verbraucherenergie (`ENERGY_APPLIANCES`) die Statistikklasse `total`: Die BEAAM-API
+kann diese Summen leicht nach unten korrigieren. Rohwerte, Einheiten und IDs bleiben
+erhalten. Die fuenf Hauptzaehler fuer Netzbezug, Einspeisung, Erzeugung und
+Speicherladung/-entladung bleiben `total_increasing`. Vorhandene Statistiken werden
+nicht geloescht oder umgeschrieben.
 
 Ab Version 0.2.0 werden `INPUTS_POWER`, `VOLTAGES` und `CURRENTS` als einzelne
 Kanaele mit festen, bei 1 beginnenden Nummern angezeigt. Diese Nummern folgen der

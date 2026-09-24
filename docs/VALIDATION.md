@@ -151,6 +151,19 @@ metadata, downward corrections, missing data, outages, recovery and reloads.
 Three daily read-only follow-ups are scheduled to inspect historical availability,
 statistics and daytime PV channels; their results are still pending.
 
+All three GitHub checks also passed for 0.2.1. HACS confirms 0.2.1 installed with
+no pending update. After restart, all 121 entity IDs were retained, both corrected
+totals reported `total` in Wh and all five main counters kept `total_increasing`.
+The source was local, site connection on and cloud fallback off. All entities
+were available, with 11 unknown measurements. The queried post-upgrade log window
+contained only the expected custom-integration loader warning; older recorder
+warnings predate this upgrade. This immediate check does not yet establish
+long-term statistics behavior after the classification change.
+
+The preceding one-hour query returned eleven five-minute statistic rows per main
+energy counter with no negative changes. Existing Energy Dashboard source IDs
+were not changed. The unrelated Miele washer warning remains when it is off.
+
 ### Still open
 
 - This is a point-in-time smoke test, not a long-running reliability test.
