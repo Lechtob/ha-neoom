@@ -130,6 +130,29 @@ was taken at night, nonzero daytime PV channel readings remain to be checked.
 
 ## Remaining validation
 
+### Production 0.2.0 and follow-up 0.2.1
+
+All three GitHub checks passed for 0.2.0. After the HACS upgrade and restart,
+the existing entry loaded with reconfiguration supported. All 107 previous entity
+IDs were retained and 14 channel entities added. Eight devices are linked to the
+site; duplicate names are disambiguated. All 121 entities were available, with
+the same 11 unknown readings. The active source was local and cloud fallback off.
+The Energy Dashboard validator reported no errors for the three neoom sources.
+
+Log inspection also revealed earlier recorder warnings for `ENERGY_CONSUMED_CALC`
+and `ENERGY_APPLIANCES`: both totals had small downward corrections in live local
+readings. Version 0.2.1 changes only these two keys from `total_increasing` to
+`total`, preserving raw values, units and identifiers. Other energy counters keep
+their existing semantics. No recorded statistics are deleted or rewritten.
+See the [HA state-class documentation](https://developers.home-assistant.io/docs/core/entity/sensor/#available-state-classes).
+
+114 tests pass with 85% combined statement/branch coverage, including Wh/kWh
+metadata, downward corrections, missing data, outages, recovery and reloads.
+Three daily read-only follow-ups are scheduled to inspect historical availability,
+statistics and daytime PV channels; their results are still pending.
+
+### Still open
+
 - This is a point-in-time smoke test, not a long-running reliability test.
 - Long-term reliability and Energy Dashboard statistics remain to be validated.
 - Nonzero daytime channel readings, other array keys and writable controls are

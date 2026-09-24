@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.2.1 (2026-09-24)
+
+- Classify calculated consumption and appliance energy as `total`, allowing the
+  downward corrections observed in live BEAAM readings without reset semantics.
+- Preserve raw values, entity IDs and units. The five main import/export,
+  production and battery counters remain `total_increasing`.
+- Add regression tests for Wh/kWh metadata, corrected values, outages and reloads.
+
 ## 0.2.0 (2026-09-24)
 
 - Reconfigure BEAAM address and optional replacement API keys through Home Assistant;

@@ -36,6 +36,8 @@ PARALLEL_UPDATES = 0
 
 ARRAY_CHANNELS = {"INPUTS_POWER": "W", "VOLTAGES": "V", "CURRENTS": "A"}
 MAX_CHANNELS = 64
+# These BEAAM totals can be corrected downwards between successful polls.
+CORRECTABLE_TOTALS = {"ENERGY_CONSUMED_CALC", "ENERGY_APPLIANCES"}
 TRANSLATED_POINTS = {
     "ACTIVE_POWER",
     "REACTIVE_POWER",
@@ -193,7 +195,11 @@ SENSOR_DESCRIPTIONS += tuple(
         else SensorDeviceClass.ENERGY,
         state_class=SensorStateClass.MEASUREMENT
         if key.startswith("POWER_")
-        else SensorStateClass.TOTAL_INCREASING,
+        else (
+            SensorStateClass.TOTAL
+            if key in CORRECTABLE_TOTALS
+            else SensorStateClass.TOTAL_INCREASING
+        ),
     )
     for key in (
         "POWER_APPLIANCES",
@@ -422,7 +428,11 @@ def describe_point(point: DataPoint) -> NeoomSensorDescription | None:
         name=point.key.replace("_", " ").capitalize(),
         native_unit_of_measurement=unit,
         device_class=device_class,
-        state_class=SensorStateClass.TOTAL_INCREASING
+        state_class=(
+            SensorStateClass.TOTAL
+            if point.key in CORRECTABLE_TOTALS
+            else SensorStateClass.TOTAL_INCREASING
+        )
         if cumulative and device_class == (SensorDeviceClass.ENERGY)
         else (None if device_class == SensorDeviceClass.ENERGY else SensorStateClass.MEASUREMENT),
         entity_category=EntityCategory.DIAGNOSTIC,
